@@ -61,6 +61,23 @@ func serviceNew(c *gin.Context) {
 		return
 	}
 
+	// add to redis
+	err := rdb.HMSet(ctx, "creating", name, form.Email).Err()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "error saving status(1): "+name)
+		return
+	}
+	err = rdb.HMSet(ctx, "emails", name, form.Email).Err()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "error saving status(1): "+name)
+		return
+	}
+
+	err = rdb.HMSet(ctx, "times", name, time.Now().Add(time.Hour).Unix()).Err()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "error saving status(1): "+name)
+		return
+	}
 	c.String(http.StatusCreated, "Creation done. Please check your email in a while!")
 }
 

@@ -2,14 +2,20 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"text/template"
+
+	"github.com/go-redis/redis/v8"
+	"gopkg.in/yaml.v3"
 )
 
 var defaultImageName = "ccr.ccs.tencentyun.com/code-server/csc3050"
+var ctx = context.Background()
+var rdb *redis.Client
 
 type kube struct {
 	WorkloadName string
@@ -91,4 +97,42 @@ func deleteF(t string, name string) bool {
 		return false
 	}
 	return true
+}
+
+type redisConfig struct {
+	Addr     string `json:"addr"`
+	Password string `json:"password"`
+}
+
+func connectRedis(configFile string) *redis.Client {
+	bytes, err := ioutil.ReadFile(configFile)
+	if err != nil {
+		log.Println("cannot read redis config file")
+		return nil
+	}
+
+	var config redisConfig
+	if yaml.Unmarshal(bytes, &config) != nil {
+		log.Println("cannot decode redis config file")
+		return nil
+	}
+
+	log.Println(config)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     config.Addr,
+		Password: config.Password,
+		DB:       0, // use default DB
+	})
+
+	if rdb == nil || rdb.Ping(ctx).Err() != nil {
+		return nil
+	}
+	return rdb
+}
+
+func init() {
+	if rdb = connectRedis("redis.yml"); rdb == nil {
+		panic("fail to connect to redis")
+	}
 }
