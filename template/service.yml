@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.name}}
+  namespace: default
+spec:
+  ports:
+    - name: 3050-3050-tcp
+      port: 3050
+      protocol: TCP
+      targetPort: 3050
+  selector:
+    k8s-app: {{.name}}
+    qcloud-app: {{.name}}
+  type: LoadBalancer
