@@ -73,7 +73,7 @@ func serviceNew(c *gin.Context) {
 		return
 	}
 
-	err = rdb.HMSet(ctx, "times", name, time.Now().Add(time.Minute).Unix()).Err()
+	err = rdb.HMSet(ctx, "times", name, time.Now().Add(time.Hour).Unix()).Err()
 	if err != nil {
 		c.String(http.StatusInternalServerError, "error saving status(1): "+name)
 		return
