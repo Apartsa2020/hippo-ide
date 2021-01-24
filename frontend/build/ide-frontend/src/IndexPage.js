@@ -20,14 +20,17 @@ import Container from '@material-ui/core/Container';
  * ------------------ */
 import DateRangeTwoToneIcon from '@material-ui/icons/DateRangeTwoTone';
 import StarRateIcon from '@material-ui/icons/StarRate';
-// import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import { AvatarGroup } from '@material-ui/lab';
-import "./SignIn.css";
 import ApartsaLogo from './asset/Apartsa_logo.png';
 import { Tooltip } from '@material-ui/core';
-import ChangeLog from './ChangeLog';
 
-import { getGitHubRepoStarNumber, getGitHubRepoContributors } from './GitHub_api';
+import { CardActions, CardContent } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+
+
+import "./IndexPage.css";
+import { getGitHubRepoStarNumber, getGitHubRepoContributors, getRepoCommitArray } from './GitHub_api';
 
 
 
@@ -42,6 +45,9 @@ const repoLink = "https://github.com/Apartsa2020/hippo-ide";
 
 
 
+/* ----------------------
+ * !!! The whole page !!!
+ * ---------------------- */
 export default function IndexPage() {
   return (
     <div className="index-page">
@@ -55,6 +61,10 @@ export default function IndexPage() {
 
 
 
+
+/* ---------------
+ * !!! Heading !!!
+ * --------------- */
 function LastUpdateDate(props) {
   return (
     <span>
@@ -80,7 +90,7 @@ function GitHubStarNumber(props) {
       // console.log(`type of star number = ${typeof(starNumber)}`);
     })
     .catch(error => console.log(`GitHubStarNumber functional component: ${error.mesg}`));
-  });
+  }, []);
 
   return (
     <span>
@@ -107,7 +117,7 @@ function Contributor(props) {
     .catch(error => {
       console.log(`fetch repo contributor array: error ${error.mesg}`);
     })
-  });
+  }, []);
 
   return (
     <span>
@@ -172,6 +182,182 @@ function Heading(props) {
 
 
 
+
+
+/* ---------------
+ * !!! Sign In !!!
+ * --------------- */
+const useStyles = makeStyles((theme) => ({
+  heading: {
+      textAlign: 'center',
+  },
+
+paper: {
+  marginTop: theme.spacing(8),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+},
+avatar: {
+  margin: theme.spacing(1),
+  backgroundColor: theme.palette.secondary.main,
+},
+form: {
+  width: '100%', // Fix IE 11 issue.
+  marginTop: theme.spacing(1),
+},
+submit: {
+  margin: theme.spacing(3, 0, 2),
+},
+}));
+
+function SignIn() {
+const classes = useStyles();
+
+return (
+  <Container component="main" maxWidth="xs">
+    <CssBaseline />
+    <div className={classes.paper}>
+      <Typography component="h1" variant="h5">
+        Use Now
+      </Typography>
+      <form method="POST" action={"/service/new"} className={classes.form} noValidate >
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          type="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+        />
+        <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+        >
+          Sign In
+        </Button>
+        <Grid container>
+          <Grid item xs>
+            <Link href="#" variant="body2">
+              Forgot password?
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link href="#" variant="body2">
+              {"Don't have an account? Sign Up"}
+            </Link>
+          </Grid>
+        </Grid>
+      </form>
+    </div>
+  </Container>
+);
+}
+
+
+
+
+
+/* --------------------------------------
+ * !!! ChangeLog (followed GNU style) !!!
+ * --------------------------------------
+ * Link: https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs
+ * 
+ * <Date>     <Contributor Name>    <Contributor Email>
+ *          <Modification Description>
+ *          ......
+ *          ......
+ */ 
+
+function ChangeLog(props) {
+  const [commitArray, setCommitArray] = useState([]);
+
+  useEffect(() => {
+      getRepoCommitArray(repoOwner, repoName)
+      .then(resp => {
+          setCommitArray(resp);
+          console.log(`commit array = ${commitArray} with type = ${typeof( commitArray )}`);
+      })
+      .catch(error => console.log(`failed with mesg = ${error.mesg}`));
+  }, []);
+
+
+  return (
+    <div className="change-log-block">
+        <Paper variant="outlined" p={1} className="change-log-paper">
+            <Typography variant="h5">
+                {"ChangeLog (Follow GNU Style)"}
+            </Typography>
+
+            
+            <div className="log">
+              {commitArray.map( ( item, index ) => {
+                  return (
+                      <Card key={index} style={{marginTop: 30, marginBottom: 30, }} >
+                          <CardContent>
+                              <div className="log-metadata">
+                                  <span>
+                                      {item.date}
+                                  </span>
+                                  <span>
+                                      {item.contributor}
+                                  </span>
+                                  <span>
+                                      {"<"}
+                                      {item.email}
+                                      {">"}
+                                  </span>
+                              </div>
+                              <div className="log-content">
+                                  <span>
+                                      {item.modification}
+                                  </span>
+                              </div>
+                          </CardContent>
+                          <CardActions>
+                              <Button size="small" color="primary" href={item.html_url} target="_blank">
+                                  Learn More
+                              </Button>
+                          </CardActions>
+                      </Card>
+                  );
+              })}
+          </div>
+        </Paper>
+    </div>
+  );
+};
+
+
+
+
+
+
+/* --------------
+ * !!! Footer !!!
+ * -------------- */
 function Footer() {
   return (
     <div className="footer">
@@ -215,105 +401,36 @@ function Footer() {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
-    heading: {
-        textAlign: 'center',
-    },
 
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
 
-export function SignIn() {
-  const classes = useStyles();
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          Use Now
-        </Typography>
-        <form method="POST" action={"/service/new"} className={classes.form} noValidate >
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            type="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign In
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
-      </div>
-    </Container>
-  );
+
+
+
+
+
+
+/* ----------------------
+ * !!! Used Functions !!!
+ * ---------------------- 
+ * Not functional component 
+ */
+
+
+/* Used in ChangeLog component as a data structure for log info */
+export function LogInfo(contributor, date, email, modification, html_url) {
+  let obj = {
+      contributor: contributor,
+      date: date,
+      email: email,
+      modification: modification,
+      html_url: html_url,
+  };
+  return obj;
 }
 
 
-
-
-
-
-
-
-
-
-
+/* used in heading for date display */
 function dateToYearMonthDayString(date) {
   let day = String(date.getDate());
   switch(date.getDate() % 10) {

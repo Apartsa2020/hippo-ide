@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import IndexPage from './SignIn';
+import IndexPage from './IndexPage';
 
 ReactDOM.render(
   <React.StrictMode>

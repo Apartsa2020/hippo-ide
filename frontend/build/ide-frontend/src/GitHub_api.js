@@ -6,7 +6,7 @@
  * 2. Get Repo Star Number 
  */ 
 
-import { LogInfo } from './ChangeLog';
+import { LogInfo } from './IndexPage';
 
 
 export async function getGitHubAvatarFromUserName(userName) {
