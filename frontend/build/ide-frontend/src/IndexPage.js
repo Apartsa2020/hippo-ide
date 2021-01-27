@@ -30,7 +30,7 @@ import Card from '@material-ui/core/Card';
 
 
 import "./IndexPage.css";
-import { getGitHubRepoStarNumber, getGitHubRepoContributors, getRepoCommitArray } from './GitHub_api';
+import { getGitHubRepoStarNumber, getGitHubRepoContributors, getRepoCommitArray, getRepoLastCommitDate } from './GitHub_api';
 
 
 
@@ -65,83 +65,89 @@ export default function IndexPage() {
 /* ---------------
  * !!! Heading !!!
  * --------------- */
-function LastUpdateDate(props) {
-  return (
-    <span>
-      <Tooltip title={"Last updated on " + dateToYearMonthDayString(new Date())}>
-        <a href="/">
-          <DateRangeTwoToneIcon style={{fontSize: "20px",}} /> 
-          {dateToYearMonthDayString(new Date())}
-        </a>
-      </Tooltip>
-    </span>
-  );
-}
-
-function GitHubStarNumber(props) {
-  const [ starNumber, setStarNumber ] = useState(0);
-
-  useEffect(() => {
-    getGitHubRepoStarNumber(props.repoOwner, props.repoName)
-    .then(resp => {
-      // console.log(`GitHubStarNumber functional component: fetch success with status code = ${resp}`);
-      setStarNumber(resp);
-      // console.log(`starNumber = ${starNumber}`);
-      // console.log(`type of star number = ${typeof(starNumber)}`);
-    })
-    .catch(error => console.log(`GitHubStarNumber functional component: ${error.mesg}`));
-  }, []);
-
-  return (
-    <span>
-      <a href="/">
-        {starNumber}
-        <StarRateIcon style={{fontSize: "18px",}} />
-        {"GitHub"}
-      </a>
-    </span>
-  );
-}    
-
-function Contributor(props) {
-  const [contributorArray, setContributorArray] = useState([]);
-
-  const githubAvatarAPI = "https://avatars.githubusercontent.com/";
-
-  useEffect(() => {
-    getGitHubRepoContributors(repoOwner, repoName)
-    .then(resp => {
-      console.log(`Contributor functional component: value is ${resp}`);
-      setContributorArray(resp);
-    })
-    .catch(error => {
-      console.log(`fetch repo contributor array: error ${error.mesg}`);
-    })
-  }, []);
-
-  return (
-    <span>
-      <div className="contributor">
-        <a href={repoLink} target="_blank" rel="noreferrer">Contributors: </a>
-      </div>
-        <div className="contributor">
-        <AvatarGroup max={4}>
-          {contributorArray.map((name, index) => {
-            return (
-              <Tooltip title={name} key={index}>
-                <Avatar alt={name} src={githubAvatarAPI+name}></Avatar>
-              </Tooltip>
-            );
-          })}
-        </AvatarGroup>
-        </div>
-    </span>
-  );
-}  
-
-
-
 function Heading(props) {
+
+  function LastUpdateDate(props) {
+    const [ lastModifiedDate, setLastModifiedDate ] = useState( new Date() );
+
+    useEffect( () => {
+      getRepoLastCommitDate( repoOwner, repoName )
+      .then( resp => {
+        // console.log( `LastUpdateDate functional component: promise return value = ${resp} with type = ${ typeof(resp) }` );
+        setLastModifiedDate( resp );
+      } );
+    }, []);
+
+    return (
+      <span>
+        <Tooltip title={"Last updated on " + dateToYearMonthDayString( lastModifiedDate )}>
+          <a href="/">
+            <DateRangeTwoToneIcon style={{fontSize: "20px",}} /> 
+            { dateToYearMonthDayString( lastModifiedDate ) }
+          </a>
+        </Tooltip>
+      </span>
+    );
+  }
+  
+  function GitHubStarNumber(props) {
+    const [ starNumber, setStarNumber ] = useState(0);
+  
+    useEffect(() => {
+      getGitHubRepoStarNumber( repoOwner, repoName )
+      .then(resp => {
+        // console.log(`GitHubStarNumber functional component: fetch success with status code = ${resp}`);
+        setStarNumber(resp);
+        // console.log(`starNumber = ${starNumber}`);
+      })
+      .catch(error => console.log(`GitHubStarNumber functional component: ${error.mesg}`));
+    }, []);
+  
+    return (
+      <span>
+        <a href="/">
+          {starNumber}
+          <StarRateIcon style={{fontSize: "18px",}} />
+          {"GitHub"}
+        </a>
+      </span>
+    );
+  }    
+  
+  function Contributor(props) {
+    const [contributorArray, setContributorArray] = useState([]);
+  
+    const githubAvatarAPI = "https://avatars.githubusercontent.com/";
+  
+    useEffect(() => {
+      getGitHubRepoContributors(repoOwner, repoName)
+      .then(resp => {
+        setContributorArray(resp);
+      })
+      .catch(error => {
+        console.log(`fetch repo contributor array: error ${error.mesg}`);
+      })
+    }, []);
+  
+    return (
+      <span>
+        <div className="contributor">
+          <a href={repoLink} target="_blank" rel="noreferrer">Contributors: </a>
+        </div>
+          <div className="contributor">
+          <AvatarGroup max={4}>
+            {contributorArray.map((name, index) => {
+              return (
+                <Tooltip title={name} key={index}>
+                  <Avatar alt={name} src={githubAvatarAPI+name}></Avatar>
+                </Tooltip>
+              );
+            })}
+          </AvatarGroup>
+          </div>
+      </span>
+    );
+  }  
 
     return (
       <div id="heading-block">
@@ -298,7 +304,7 @@ function ChangeLog(props) {
       getRepoCommitArray(repoOwner, repoName)
       .then(resp => {
           setCommitArray(resp);
-          console.log(`commit array = ${commitArray} with type = ${typeof( commitArray )}`);
+          // console.log(`commit array = ${JSON.stringify(commitArray)} with type = ${typeof( commitArray )}`);
       })
       .catch(error => console.log(`failed with mesg = ${error.mesg}`));
   }, []);
@@ -319,7 +325,7 @@ function ChangeLog(props) {
                           <CardContent>
                               <div className="log-metadata">
                                   <span>
-                                      {item.date}
+                                      {changeLogTimeStructure( new Date(item.date) )}
                                   </span>
                                   <span>
                                       {item.contributor}
@@ -419,14 +425,20 @@ function Footer() {
 
 /* Used in ChangeLog component as a data structure for log info */
 export function LogInfo(contributor, date, email, modification, html_url) {
-  let obj = {
-      contributor: contributor,
-      date: date,
-      email: email,
-      modification: modification,
-      html_url: html_url,
-  };
-  return obj;
+  // let obj = {
+  //     contributor: contributor,
+  //     date: date,
+  //     email: email,
+  //     modification: modification,
+  //     html_url: html_url,
+  // };
+  // return obj;
+
+  this.contributor = contributor;
+  this.date = date;
+  this.email = email;
+  this.modification = modification;
+  this.html_url = html_url;
 }
 
 
@@ -495,4 +507,22 @@ function dateToYearMonthDayString(date) {
   }
 
   return (day + " " + month + " " + year);
+}
+
+
+function changeLogTimeStructure(date) {
+  if (date instanceof Date === true) {
+    // console.log(`date = ${date} with type = ${ typeof(date) }`);
+    let year = String( date.getFullYear() );
+    let month = String( date.getMonth() + 1 );
+    let day = String( date.getDate() );
+
+    let time = date.toLocaleTimeString();
+
+    return `${year}-${month}-${day}   ${time}`;
+  }
+  else {
+    console.log("changeLog time structure function: input date is not of type Date");
+    return null;
+  }
 }
