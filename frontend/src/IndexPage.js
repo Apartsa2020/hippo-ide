@@ -157,21 +157,21 @@ function Heading(props) {
 
   return (
     <div id="heading-block">
-      <div className="logo">
+      {/* <div className="logo">
         <a href="https://apartsa.com/">
           <img alt="Apartsa Logo" src={ApartsaLogo} />
         </a>
-      </div>
+      </div> */}
 
       <div className="headline">
         <Typography component="h1" variant="h4">
-          Apartsa Hippo IDE
+          Hippo IDE
               </Typography>
       </div>
 
       <div className="sub-title">
         <Typography>
-          {"Warning: This is a beta version. All data will be cleared in 2021-01-19 23:30!"}
+          {"Warning: This is a beta version. All data will be cleared in 2021-01-30 23:00!"}
         </Typography>
 
         <Typography style={{ paddingTop: 10, }}>
@@ -257,10 +257,10 @@ function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth
@@ -268,9 +268,9 @@ function SignIn() {
             color="primary"
             className={classes.submit}
           >
-            Sign In
+            Request
         </Button>
-          <Grid container>
+          {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
                 Forgot password?
@@ -281,7 +281,7 @@ function SignIn() {
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
-          </Grid>
+          </Grid> */}
         </form>
       </div>
     </Container>
