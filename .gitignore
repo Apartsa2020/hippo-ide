@@ -16,3 +16,4 @@
 bin/
 *.yml
 *.log
+*.eslintcache
