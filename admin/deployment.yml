@@ -21,7 +21,7 @@ spec:
       - env:
         - name: PASSWORD
           value: "{{.password}}"
-        image: ccr.ccs.tencentyun.com/code-server/csc3050
+        image: ccr.ccs.tencentyun.com/code-server/csc3050:v1.3
         imagePullPolicy: Always
         name: {{.name}}
         resources:
