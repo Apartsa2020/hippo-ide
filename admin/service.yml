@@ -5,10 +5,10 @@ metadata:
   namespace: default
 spec:
   ports:
-    - name: 3050-3050-tcp
-      port: 3050
+    - name: 3049-3049-tcp
+      port: 3049
       protocol: TCP
-      targetPort: 3050
+      targetPort: 3049
   selector:
     k8s-app: {{.name}}
     qcloud-app: {{.name}}

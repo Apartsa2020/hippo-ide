@@ -136,10 +136,12 @@ func SendTLSMail(addr string, auth smtp.Auth, from string, to []string, msg []by
 // SendEmailReady ...
 func SendEmailReady(em EmailMessenger, userEmail string, ipaddress string, paramString string) error {
 	url := "http://hippo-ide.apartsa.com/service/terminate/" + paramString // http://127.0.0.1:8000
-	ipaddress = "http://" + ipaddress + ":3050/"
+	ipaddress = "http://" + ipaddress + ":3049/"
+	// based := "http://hippo.apartsa.com/" + base64.StdEncoding.EncodeToString([]byte(ipaddress))
+	based := ipaddress
 	form := EmailSendForm{
 		Subject:    "Apartsa Hippo IDE Ready",
-		Body:       fmt.Sprintf("Your IDE's IP address is <a href='%s'>%s</a>.<br>You have 1 hour to use it. It will automatically terminate after 1 hour.<br><br>To terminate it actively, you can click the following link: <a href='%s'>%s</a> <br><br>Best regards,<br>Apartsa Hippo IDE Team", ipaddress, ipaddress, url, url),
+		Body:       fmt.Sprintf("Your IDE's IP address is <a href='%s'>%s</a>.<br>You have 1 hour to use it. It will automatically terminate after 1 hour.<br><br>To terminate it actively, you can click the following link: <a href='%s'>%s</a> <br><br>Best regards,<br>Apartsa Hippo IDE Team", based, based, url, url),
 		FromEmail:  "no-reply@apartsa.com",
 		ToEmail:    userEmail,
 		SenderName: "Apartsa Hippo IDE Team",
@@ -149,10 +151,12 @@ func SendEmailReady(em EmailMessenger, userEmail string, ipaddress string, param
 
 // SendEmailTTL ...
 func SendEmailTTL(em EmailMessenger, userEmail string, ipaddress string) error {
-	ipaddress = "http://" + ipaddress + ":3050/"
+	ipaddress = "http://" + ipaddress + ":3049/"
+	// based := "http://hippo.apartsa.com/" + base64.StdEncoding.EncodeToString([]byte(ipaddress))
+	based := ipaddress
 	form := EmailSendForm{
 		Subject:    "Apartsa Hippo IDE Terminated",
-		Body:       fmt.Sprintf("Your IDE on IP address %s has run out of time.<br>Thank you for using Hippo IDE.<br><br>Best regards,<br>Apartsa Hippo IDE Team", ipaddress),
+		Body:       fmt.Sprintf("Your IDE on IP address %s has run out of time.<br>Thank you for using Hippo IDE.<br><br>Best regards,<br>Apartsa Hippo IDE Team", based),
 		FromEmail:  "no-reply@apartsa.com",
 		ToEmail:    userEmail,
 		SenderName: "Apartsa Hippo IDE Team",
