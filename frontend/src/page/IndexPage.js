@@ -2,11 +2,11 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 
-import "./style/IndexPage.css";
-import Heading from './components/HomePage/Heading';
-import SignIn from './components/HomePage/SignIn';
-import ChangeLog from './components/HomePage/ChangeLog';
-import Footer from './components/HomePage/Footer';
+import "../style/IndexPage.css";
+import Heading from '../components/HomePage/Heading';
+import SignIn from '../components/HomePage/SignIn';
+import ChangeLog from '../components/HomePage/ChangeLog';
+import Footer from '../components/HomePage/Footer';
 
 
 

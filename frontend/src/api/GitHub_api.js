@@ -2,11 +2,23 @@
  * !!! GitHub_api.js !!!
  * --------------------- 
  * This .js file is to implement some async functions which fetch resource from github
- * 1. Get User Avatar from User Name
- * 2. Get Repo Star Number 
+ * 1. getGithubRepoStarNumber
+ * 2. getGithubRepoContributor
+ * 3. getGithubLastCommitDate
+ * 4. getGithubCommitArray
+ * 
+ * 
+ * 主要params参数
+ * @params      repoOwner   {string}    github仓库拥有者
+ * @params      repoName    {string}    github仓库名
+ * @params      baseURL     {string}    基础github接口，repo信息皆为  "https://api.github.com/repos/"
+ * @params      finalURL    {string}    各函数实际调用的接口URL（baseURL + 参数）
  */ 
 
-import { LogInfo } from './IndexPage';
+import { LogInfo } from '../IndexPage';
+
+
+
 
 
 
